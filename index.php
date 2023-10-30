@@ -24,7 +24,7 @@ $id=($path!=='/') ? end($buscarId):null;
 switch ($metodo) {
         //SELECT
     case 'GET':
-        consultaSelect($conexion);
+        consultar($conexion, $id);
         break;
         //INSERT
     case 'POST':
@@ -32,7 +32,7 @@ switch ($metodo) {
         break;
         //UPDATE
     case 'PUT':
-        echo "Edicion de registros - PUT";
+        modificar($conexion, $id);
         break;
         //DELETE
     case 'DELETE':
@@ -43,8 +43,8 @@ switch ($metodo) {
         break;
 }
 
-function consultaSelect($conexion){
-    $sql = "SELECT * From usuarios";
+function consultar($conexion, $id){
+    $sql = ($id===null) ? "SELECT * From usuarios" : "SELECT * FROM usuarios WHERE id=$id";
     $resultado= $conexion->query($sql);
     
     if($resultado){
@@ -67,7 +67,7 @@ function insertar($conexion){
         echo json_encode($dato);
 
     }else{
-        json_encode(array('error' => 'Error al crear usuarios'));
+        echo json_encode(array('error' => 'Error al crear usuarios'));
     }
 }
 
@@ -77,7 +77,20 @@ function borrar($conexion, $id){
     if($resultado){   
         echo json_encode(array('mensaje' => 'Usuario borrado'));
     }else{
-        echo json_encode(array('error' => 'Error al crear usuarios'));
+        echo json_encode(array('error' => 'Error al eliminar el usuario'));
+    }
+}
+
+function modificar($conexion, $id){
+    $dato = json_decode(file_get_contents('php://input'), true);
+    $nombre = $dato['nombre'];
+
+    $sql = "UPDATE usuarios SET nombre = '$nombre' WHERE id=$id";
+    $resultado= $conexion->query($sql);
+    if($resultado){   
+        echo json_encode(array('mensaje' => 'Usuario Actualizado'));
+    }else{
+        echo json_encode(array('error' => 'Error al actualizar usuario'));
     }
 }
 
