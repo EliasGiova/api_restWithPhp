@@ -15,6 +15,12 @@ header("Content-Type: application/json"); //si o si, para que devuelva un archiv
 
 $metodo = $_SERVER["REQUEST_METHOD"]; //recibimos el metodo que querramos (put, get, post, etc.)
 
+$path= isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] :'/'; //
+
+$buscarId = explode('/',$path);
+
+$id=($path!=='/') ? end($buscarId):null;
+
 switch ($metodo) {
         //SELECT
     case 'GET':
@@ -30,7 +36,7 @@ switch ($metodo) {
         break;
         //DELETE
     case 'DELETE':
-        echo "Borrado de registros - DELETE";
+        borrar($conexion, $id);
         break;
     default:
         echo "Metodo no permitido";
@@ -64,3 +70,15 @@ function insertar($conexion){
         json_encode(array('error' => 'Error al crear usuarios'));
     }
 }
+
+function borrar($conexion, $id){
+    $sql = "DELETE FROM usuarios WHERE id=$id";
+    $resultado= $conexion->query($sql);
+    if($resultado){   
+        echo json_encode(array('mensaje' => 'Usuario borrado'));
+    }else{
+        echo json_encode(array('error' => 'Error al crear usuarios'));
+    }
+}
+
+
